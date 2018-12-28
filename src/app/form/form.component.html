@@ -1,0 +1,55 @@
+<form [formGroup]="userForm"
+      class="login-form"
+      (submit)="isValid(userForm.value)">
+
+  <mat-form-field>
+    <input matInput
+           placeholder="Customer email"
+           formControlName="email"
+           type="email"
+           required>
+    <mat-error *ngIf="userForm.controls.email?.hasError('required')">
+      required
+    </mat-error>
+    <mat-error *ngIf="userForm.controls.email?.hasError('email')">
+      Enter a valid email.
+    </mat-error>
+
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput
+           placeholder="Description"
+           formControlName="description"
+           type="text">
+    <mat-error *ngIf="!userForm.controls.description?.hasError('maxLength')">
+      Max Length 300
+    </mat-error>
+
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput
+           placeholder="Balance"
+           formControlName="balance"
+           type="number"
+           required>
+
+    <mat-hint>Number</mat-hint>
+    <mat-error *ngIf="userForm.controls.balance.hasError('pattern')
+    && !userForm.controls.balance?.hasError('required')">
+      Balance required
+    </mat-error>
+
+  </mat-form-field>
+
+  <button mat-raised-button
+          color="primary"
+          [disabled]="userForm.invalid"
+  >{{ userForm.invalid ? 'Fill all inputs' : 'Add customer' }}
+  </button>
+
+  <mat-error class="emailExist-error" *ngIf="emailExist">
+    Customer with the same email already exist
+  </mat-error>
+</form>

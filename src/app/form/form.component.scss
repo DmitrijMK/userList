@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  form {
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+    max-width: 500px;
+    width: 100%;
+    margin: 50px 10px 10px 10px;
+
+    mat-form-field {
+      width: 100%;
+    }
+    button {
+      margin-top: 15px;
+    }
+
+    .emailExist-error {
+      margin: 15px;
+    }
+  }
+}
