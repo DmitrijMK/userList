@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { timer, Subject, Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { ICustomerList } from '../models/stripe.interface';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {timer, Subject, Observable} from 'rxjs';
+import {catchError, mergeMap} from 'rxjs/operators';
+import {ICustomerList} from '../models/stripe.interface';
 
 export const MILLISECONDS_TO_REFRESH = 30000;
 
@@ -29,14 +29,29 @@ export class StripeService {
     return this.httpClient.post(this.createCustomerUrl, params, {headers: this.getHeaders()});
   }
 
+  chekIfCustomerExist(): Observable<any> {
+    return this.httpClient.get(this.customerListUrl, {headers: this.getHeaders()})
+      .pipe(catchError(this.handleError));
+  }
+
   getCustomerList(): Observable<any> {
     return timer(0, MILLISECONDS_TO_REFRESH)
-      .pipe(mergeMap(() => this.httpClient.get(this.customerListUrl, {headers: this.getHeaders()})));
+      .pipe(
+        mergeMap(() => this.httpClient.get(this.customerListUrl, {headers: this.getHeaders()})),
+        catchError(this.handleError)
+      );
   }
 
   private getHeaders() {
     return new HttpHeaders({
       'Authorization': 'Bearer ' + this.secretKey
     });
+  }
+
+  private handleError(error: any) {
+    const errorMsg = (error.message) ? error.message :
+      error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+
+    return Observable.throw(errorMsg);
   }
 }

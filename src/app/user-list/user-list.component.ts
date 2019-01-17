@@ -19,8 +19,10 @@ export class UserListComponent implements OnInit {
     this.stripeService.getCustomerList()
       .subscribe(res => {
         this.stripeService.customerList$.next(res.data);
-        this.customerList = this.getMatTableDataSource(res.data);
       });
+
+    this.stripeService.customerList$
+      .subscribe(res => this.customerList = this.getMatTableDataSource(res));
   }
 
   applyFilter(filterValue: string) {

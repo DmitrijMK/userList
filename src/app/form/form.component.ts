@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { StripeService } from '../shared/services/stripe.service';
-import { ICustomerList } from '../shared/models/stripe.interface';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {StripeService} from '../shared/services/stripe.service';
 import * as _ from 'lodash';
 
 @Component({
@@ -11,7 +10,6 @@ import * as _ from 'lodash';
 })
 export class FormComponent implements OnInit {
   userForm: FormGroup;
-  customerList: ICustomerList[];
   emailExist = false;
 
   constructor(
@@ -34,20 +32,22 @@ export class FormComponent implements OnInit {
         Validators.pattern(/^-?(0|[1-9]\d*)?$/)
       ]]
     });
-
-    this.stripeService.customerList$
-      .subscribe(res => this.customerList = res);
   }
 
   isValid(value) {
     const email = value.email;
-
     this.emailExist = false;
-    if (_.find(this.customerList, list => list.email === email)) {
-      this.emailExist = true;
-    } else {
-      this.createCustomer(value);
-    }
+
+    this.stripeService.chekIfCustomerExist()
+      .subscribe(res => {
+        this.stripeService.customerList$.next(res.data);
+
+        if (_.find(res.data, list => list.email === email)) {
+          this.emailExist = true;
+        } else {
+          this.createCustomer(value);
+        }
+      });
   }
 
   private createCustomer(value): void {
